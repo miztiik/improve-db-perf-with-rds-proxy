@@ -87,6 +87,8 @@ We will build the above architecture in this demo. We will use `PostgreSQL 11.6`
       - DB Username: `mystiquemaster`
       - DB Password: Auto generated and stored in AWS Secrets Manager
       - Parameter & Option Group: Defaults
+      - Performance Insights: `Enabled`
+      - Multi-AZ: `Enabled`
 
       Initiate the deployment with the following command,
 
