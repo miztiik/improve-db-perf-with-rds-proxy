@@ -143,6 +143,7 @@ We will build the above architecture in this demo. We will use `PostgreSQL 11.6`
         ![Miztiik Automation:  Improve Databases Performance & Availability with RDS Proxy](images/miztiik_automation_improve_db_perf_with_rds_proxy_architecture_02.png)
 
         After the initialization is complete, We will perform two tests. The first one will connect directly to the database endpoint and in the second one we will connect to the db using the proxy endpoint and see how the connection scaling works.
+
         ![Miztiik Automation:  Improve Databases Performance & Availability with RDS Proxy](images/miztiik_automation_improve_db_perf_with_rds_proxy_architecture_01.png)
 
         - **Test: Connections-To-DB**
