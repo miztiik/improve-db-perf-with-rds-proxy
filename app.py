@@ -3,30 +3,11 @@
 from aws_cdk import core as cdk
 
 from stacks.back_end.vpc_stack import VpcStack
-from stacks.back_end.s3_stack.s3_stack import S3Stack
 from stacks.back_end.rds_stack import RdsDatabaseStack
 from stacks.back_end.rds_proxy_stack import RdsDatabaseProxyStack
 from stacks.back_end.store_events_consumer_on_ec2_stack.store_events_consumer_on_ec2_stack import StoreEventsConsumerOnEC2Stack
-from stacks.back_end.serverless_s3_producer_stack.serverless_s3_producer_stack import ServerlessS3ProducerStack
 
 app = cdk.App()
-
-# # S3 Bucket to hold our store events
-# store_events_bkt_stack = S3Stack(
-#     app,
-#     # f"{app.node.try_get_context('project')}-store-events-bkt-stack",
-#     f"store-events-bkt-stack",
-#     stack_log_level="INFO",
-#     description="Miztiik Automation: S3 Bucket to hold our store events"
-# )
-
-# # S3 Sales Event Data Producer on Lambda
-# store_events_producer_stack = ServerlessS3ProducerStack(
-#     app,
-#     f"store-events-producer-stack",
-#     stack_log_level="INFO",
-#     sales_event_bkt=store_events_bkt_stack.data_bkt,
-#     description="Miztiik Automation: S3 Sales Event Data Producer on Lambda")
 
 
 # VPC Stack for hosting Secure workloads & Other resources
