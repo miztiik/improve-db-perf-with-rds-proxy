@@ -1,34 +1,84 @@
 #!/usr/bin/env python3
-import os
 
 from aws_cdk import core as cdk
 
-# For consistency with TypeScript code, `cdk` is the preferred import name for
-# the CDK's core module.  The following line also imports it as `core` for use
-# with examples from the CDK Developer's Guide, which are in the process of
-# being updated to use `cdk`.  You may delete this import if you don't need it.
-from aws_cdk import core
+from stacks.back_end.vpc_stack import VpcStack
+from stacks.back_end.s3_stack.s3_stack import S3Stack
+from stacks.back_end.rds_stack import RdsDatabaseStack
+from stacks.back_end.rds_proxy_stack import RdsDatabaseProxyStack
+from stacks.back_end.store_events_consumer_on_ec2_stack.store_events_consumer_on_ec2_stack import StoreEventsConsumerOnEC2Stack
+from stacks.back_end.serverless_s3_producer_stack.serverless_s3_producer_stack import ServerlessS3ProducerStack
 
-from improve_db_perf_with_rds_proxy.improve_db_perf_with_rds_proxy_stack import ImproveDbPerfWithRdsProxyStack
+app = cdk.App()
+
+# # S3 Bucket to hold our store events
+# store_events_bkt_stack = S3Stack(
+#     app,
+#     # f"{app.node.try_get_context('project')}-store-events-bkt-stack",
+#     f"store-events-bkt-stack",
+#     stack_log_level="INFO",
+#     description="Miztiik Automation: S3 Bucket to hold our store events"
+# )
+
+# # S3 Sales Event Data Producer on Lambda
+# store_events_producer_stack = ServerlessS3ProducerStack(
+#     app,
+#     f"store-events-producer-stack",
+#     stack_log_level="INFO",
+#     sales_event_bkt=store_events_bkt_stack.data_bkt,
+#     description="Miztiik Automation: S3 Sales Event Data Producer on Lambda")
 
 
-app = core.App()
-ImproveDbPerfWithRdsProxyStack(app, "ImproveDbPerfWithRdsProxyStack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
+# VPC Stack for hosting Secure workloads & Other resources
+vpc_stack = VpcStack(
+    app,
+    f"{app.node.try_get_context('project')}-vpc-stack",
+    stack_log_level="INFO",
+    description="Miztiik Automation: Custom Multi-AZ VPC"
+)
 
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
+# Deploy RDS Consumer On EC2 instance
+store_events_consumer_stack = StoreEventsConsumerOnEC2Stack(
+    app,
+    f"store-events-consumer-stack",
+    stack_log_level="INFO",
+    vpc=vpc_stack.vpc,
+    ec2_instance_type="t2.micro",
+    description="Miztiik Automation: Deploy RDS Consumer On EC2 instance"
+)
 
-    #env=core.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
+# Sales Events Database on RDS with PostgreSQL
+store_events_db_stack = RdsDatabaseStack(
+    app,
+    f"store-events-db-stack",
+    stack_log_level="INFO",
+    vpc=vpc_stack.vpc,
+    rds_instance_size="r5.large",  # db. prefix is added by cdk automatically
+    enable_multi_az=True,
+    enable_perf_insights=True,
+    description="Miztiik Automation: Sales Events Database on RDS with PostgreSQL",
+)
 
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
+# Sales Events Database Proxy
+store_events_db_proxy_stack = RdsDatabaseProxyStack(
+    app,
+    f"store-events-db-proxy-stack",
+    stack_log_level="INFO",
+    vpc=vpc_stack.vpc,
+    db_target=store_events_db_stack.store_events_db,
+    db_secret=store_events_db_stack.db_secret,
+    db_sg=store_events_db_stack.pgsql_db_sg,
+    description="Miztiik Automation: Sales Events Database Proxy",
+)
 
-    #env=core.Environment(account='123456789012', region='us-east-1'),
 
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-    )
+# Stack Level Tagging
+_tags_lst = app.node.try_get_context("tags")
+
+if _tags_lst:
+    for _t in _tags_lst:
+        for k, v in _t.items():
+            cdk.Tags.of(app).add(
+                k, v, apply_to_launched_instances=True, priority=300)
 
 app.synth()

@@ -9,14 +9,14 @@ setuptools.setup(
     name="improve_db_perf_with_rds_proxy",
     version="0.0.1",
 
-    description="An empty CDK Python app",
+    description="improve-db-perf-with-rds-proxy",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
     author="author",
 
-    package_dir={"": "improve_db_perf_with_rds_proxy"},
-    packages=setuptools.find_packages(where="improve_db_perf_with_rds_proxy"),
+    package_dir={"": "stacks"},
+    packages=setuptools.find_packages(where="stacks"),
 
     install_requires=[
         "aws-cdk.core==1.98.0",
