@@ -9,10 +9,14 @@ Can you help the Miztiik Unicorn team with PoC on how these two database problem
 ## 🎯 Solutions
 
 Amazon RDS Proxy<sup>[1]</sup> can front your Amazon RDS for MySQL/PostgreSQL and Aurora MySQL/PostgreSQL databases. It allows you to manage an application’s access to the database and provides _connection pooling, multiplexing, and graceful failover_. It helps you to scale beyond database connection limits and manage bursts of connections and requests from applications. This post focuses on the failover benefits of RDS Proxy.
-![Miztiik Automation:  Improve Databases Performance & Availability with RDS Proxy](images/miztiik_automation_improve_db_perf_with_rds_proxy_architecture_000.png)
+
 ![Miztiik Automation:  Improve Databases Performance & Availability with RDS Proxy](images/miztiik_automation_improve_db_perf_with_rds_proxy_architecture_00.png)
 
-Failover occurs when the primary database instance becomes inaccessible and another instance takes over as the new primary. This disrupts client connections. DNS propagation delay is the largest contributor to overall failover time. With RDS Proxy, the applications can avoid the complexity associated with failover and experience faster recovery. RDS Proxy actively monitors database instances and automatically connects clients to the right target. It also maintains idle client connections through database failover without dropping them. Idle connections in this context are connections that don’t have outstanding requests.
+Failover occurs when the primary database instance becomes inaccessible and another instance takes over as the new primary. This disrupts client connections. DNS propagation delay is the largest contributor to overall failover time.
+
+![Miztiik Automation:  Improve Databases Performance & Availability with RDS Proxy](images/miztiik_automation_improve_db_perf_with_rds_proxy_architecture_000.png)
+
+With RDS Proxy, the applications can avoid the complexity associated with failover and experience faster recovery. RDS Proxy actively monitors database instances and automatically connects clients to the right target. It also maintains idle client connections through database failover without dropping them. Idle connections in this context are connections that don’t have outstanding requests.
 
 ![Miztiik Automation:  Improve Databases Performance & Availability with RDS Proxy](images/miztiik_automation_improve_db_perf_with_rds_proxy_architecture_0.png)
 
